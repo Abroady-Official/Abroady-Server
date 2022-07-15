@@ -4,7 +4,7 @@
 .env.*
 
 # 워크플로우 설정 후 이그노어 해제
-.github
+workflows
 
 # Logs
 logs
