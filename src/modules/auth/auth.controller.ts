@@ -30,7 +30,6 @@ import { AuthGetHeaderDTO } from './dto/auth-get.header.dto';
 import { AuthGetParamDTO } from './dto/auth-get.param.dto';
 import { AuthPostReqDTO } from './dto/auth-post.req.dto';
 
-//& Kim Heebin
 @ApiTags('Auth')
 @Controller('auth')
 @UseFilters(HttpExceptionFilter)

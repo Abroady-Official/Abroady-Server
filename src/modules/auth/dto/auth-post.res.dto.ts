@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 
 export class AuthPostResDTO {
@@ -8,7 +7,7 @@ export class AuthPostResDTO {
   @ApiProperty() @Exclude() private readonly accessToken: string;
   @ApiProperty() @Exclude() private readonly refreshToken: string;
 
-  constructor(user: User, accessToken: string) {
+  constructor(user: any, accessToken: string) {
     this.id = user.id;
     this.nickname = user.nickname;
     this.accessToken = accessToken;

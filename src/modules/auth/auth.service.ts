@@ -1,21 +1,21 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import axios from "axios";
-import { rm } from "src/common/constants";
-import { JwtPayload } from "src/common/constants/jwt/jwtPayload";
-import { ApiConfigService } from "src/config/services/api-config.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { AuthGetResDTO } from "./dto/auth-get.res.dto";
-import { AuthPostReqDTO } from "./dto/auth-post.req.dto";
-import { AuthPostResDTO } from "./dto/auth-post.res.dto";
-import { AuthSigninResDTO } from "./dto/auth-signin.res.dto";
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import axios from 'axios';
+import { rm } from 'src/common/constants';
+import { JwtPayload } from 'src/common/constants/jwt/jwtPayload';
+import { ApiConfigService } from 'src/config/services/api-config.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthGetResDTO } from './dto/auth-get.res.dto';
+import { AuthPostReqDTO } from './dto/auth-post.req.dto';
+import { AuthPostResDTO } from './dto/auth-post.res.dto';
+import { AuthSigninResDTO } from './dto/auth-signin.res.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
-    private readonly config: ApiConfigService
+    private readonly config: ApiConfigService,
   ) {}
 
   //* 소셜 로그인
@@ -84,7 +84,7 @@ export class AuthService {
   //^ 소셜 uuid 조회
   private async getUuid(social: string, token: string) {
     switch (social) {
-      case "kakao":
+      case 'kakao':
         return await this.signinKakao(token);
       default:
         throw new BadRequestException(rm.OUT_OF_VALUE);
@@ -93,7 +93,7 @@ export class AuthService {
 
   //^ 카카오 유저 조회
   private async signinKakao(token: string) {
-    const url = "https://kapi.kakao.com/v2/user/me";
+    const url = 'https://kapi.kakao.com/v2/user/me';
 
     try {
       const user = await axios.get(url, {
@@ -130,7 +130,7 @@ export class AuthService {
       {
         secret: this.config.jwtConfig.jwtSecret,
         expiresIn: this.config.jwtConfig.jwtRefreshExpiration,
-      }
+      },
     );
   }
 
