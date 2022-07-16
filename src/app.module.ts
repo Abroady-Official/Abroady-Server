@@ -9,7 +9,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
-  imports: [ConfigurationModule, PrismaModule, CommonModule, UsersModule, AuthModule, JwtModule],
+  imports: [ConfigurationModule, PrismaModule, CommonModule, UsersModule],
   controllers: [AppController],
   providers: [],
 })
