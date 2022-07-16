@@ -6,6 +6,11 @@ import { UserDevicePutReqDTO } from './dto/user-device-put.req.dto';
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
+  //* 전체 유저 조회
+  async getUsers() {
+    return await this.prisma.user.findMany();
+  }
+
   //* userId로 유저 조회
   async getUserById(userId: number): Promise<any> {
     const user = await this.prisma.user.findUnique({

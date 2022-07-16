@@ -18,110 +18,110 @@ export class AuthService {
     private readonly config: ApiConfigService,
   ) {}
 
-  //* 소셜 로그인
-  async signinSocial(social: string, token: string) {
-    const uuid = await this.getUuid(social, token);
-    const existedUser = await this.prisma.user.findUnique({ where: { uuid } });
+  // //* 소셜 로그인
+  // async signinSocial(social: string, token: string) {
+  //   const uuid = await this.getUuid(social, token);
+  //   const existedUser = await this.prisma.user.findUnique({ where: { uuid } });
 
-    if (!existedUser || existedUser.isDeleted) {
-      return new AuthGetResDTO(social, uuid);
-    }
-    return await this.signin(existedUser.id);
-  }
+  //   if (!existedUser) {
+  //     return new AuthGetResDTO(social, uuid);
+  //   }
+  //   return await this.signin(existedUser.id);
+  // }
 
-  //* 회원가입
-  async signup(dto: AuthPostReqDTO, image: string) {
-    try {
-      await this.checkAlreadyNickname(dto.nickname);
+  // //* 회원가입
+  // async signup(dto: AuthPostReqDTO, image: string) {
+  //   try {
+  //     await this.checkAlreadyNickname(dto.nickname);
 
-      const user = await this.prisma.user.create({
-        data: {
-          ...dto,
-          refreshToken: this.getRefreshToken(),
-          profileImage: image,
-          Badge: { create: {} },
-        },
-      });
-      const payload: JwtPayload = { ...user };
+  //     const user = await this.prisma.user.create({
+  //       data: {
+  //         ...dto,
+  //         refreshToken: this.getRefreshToken(),
+  //         profileImage: image,
+  //         Badge: { create: {} },
+  //       },
+  //     });
+  //     const payload: JwtPayload = { ...user };
 
-      return new AuthPostResDTO(user, this.getAccessToken(payload));
-    } catch (error) {
-      console.error(error);
-      if (error instanceof ConflictException) {
-        throw new ConflictException(rm.ALREADY_NICKNAME);
-      }
-      throw new BadRequestException(rm.SIGNUP_FAIL);
-    }
-  }
+  //     return new AuthPostResDTO(user, this.getAccessToken(payload));
+  //   } catch (error) {
+  //     console.error(error);
+  //     if (error instanceof ConflictException) {
+  //       throw new ConflictException(rm.ALREADY_NICKNAME);
+  //     }
+  //     throw new BadRequestException(rm.SIGNUP_FAIL);
+  //   }
+  // }
 
-  //* 유저 Validation
-  async validateUser(payload: JwtPayload) {
-    const { id } = payload;
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id,
-        isDeleted: false,
-      },
-    });
+  // //* 유저 Validation
+  // async validateUser(payload: JwtPayload) {
+  //   const { id } = payload;
+  //   const user = await this.prisma.user.findFirst({
+  //     where: {
+  //       id,
+  //       isDeleted: false,
+  //     },
+  //   });
 
-    if (!user) {
-      throw new UnauthorizedException(rm.UNAUTHORIZED_USER);
-    }
-    return payload;
-  }
+  //   if (!user) {
+  //     throw new UnauthorizedException(rm.UNAUTHORIZED_USER);
+  //   }
+  //   return payload;
+  // }
 
-  //^ 닉네임 중복 체크
-  private async checkAlreadyNickname(nickname: string) {
-    const isAlreadyNickname = await this.prisma.user.findUnique({
-      where: { nickname },
-    });
+  // //^ 닉네임 중복 체크
+  // private async checkAlreadyNickname(nickname: string) {
+  //   const isAlreadyNickname = await this.prisma.user.findUnique({
+  //     where: { nickname },
+  //   });
 
-    if (isAlreadyNickname) {
-      throw new ConflictException(rm.ALREADY_NICKNAME);
-    }
-  }
+  //   if (isAlreadyNickname) {
+  //     throw new ConflictException(rm.ALREADY_NICKNAME);
+  //   }
+  // }
 
-  //^ 소셜 uuid 조회
-  private async getUuid(social: string, token: string) {
-    switch (social) {
-      case 'kakao':
-        return await this.signinKakao(token);
-      default:
-        throw new BadRequestException(rm.OUT_OF_VALUE);
-    }
-  }
+  // //^ 소셜 uuid 조회
+  // private async getUuid(social: string, token: string) {
+  //   switch (social) {
+  //     case 'kakao':
+  //       return await this.signinKakao(token);
+  //     default:
+  //       throw new BadRequestException(rm.OUT_OF_VALUE);
+  //   }
+  // }
 
-  //^ 카카오 유저 조회
-  private async signinKakao(token: string) {
-    const url = 'https://kapi.kakao.com/v2/user/me';
+  // //^ 카카오 유저 조회
+  // private async signinKakao(token: string) {
+  //   const url = 'https://kapi.kakao.com/v2/user/me';
 
-    try {
-      const user = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  //   try {
+  //     const user = await axios.get(url, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-      return String(user.data.id);
-    } catch (error) {
-      console.error(error);
-      throw new UnauthorizedException(rm.UNAUTHORIZED_SOCIAL);
-    }
-  }
+  //     return String(user.data.id);
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new UnauthorizedException(rm.UNAUTHORIZED_SOCIAL);
+  //   }
+  // }
 
-  //^ 로그인
-  private async signin(userId: number) {
-    try {
-      const user = await this.prisma.user.update({
-        where: { id: userId },
-        data: { refreshToken: this.getRefreshToken() },
-      });
-      const payload: JwtPayload = { ...user };
+  // //^ 로그인
+  // private async signin(userId: number) {
+  //   try {
+  //     const user = await this.prisma.user.update({
+  //       where: { id: userId },
+  //       data: { refreshToken: this.getRefreshToken() },
+  //     });
+  //     const payload: JwtPayload = { ...user };
 
-      return new AuthSigninResDTO(user, this.getAccessToken(payload));
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException(rm.SIGNIN_FAIL);
-    }
-  }
+  //     return new AuthSigninResDTO(user, this.getAccessToken(payload));
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new BadRequestException(rm.SIGNIN_FAIL);
+  //   }
+  // }
 
   //^ Refresh Token 발급
   private getRefreshToken() {

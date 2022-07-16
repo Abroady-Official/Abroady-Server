@@ -71,12 +71,11 @@ export class AuthController {
     type: InternalServerError,
   })
   async authUser(@Param() param: AuthGetParamDTO, @Headers() header: AuthGetHeaderDTO) {
-    const data = await this.authService.signinSocial(param.social, header.token);
-
-    if (data.getType === 'signup') {
-      return ResponseEntity.ACCEPTED_WITH_DATA(rm.NO_USER, data);
-    }
-    return ResponseEntity.OK_WITH_DATA(rm.SIGNIN_SUCCESS, data);
+    // const data = await this.authService.signinSocial(param.social, header.token);
+    // if (data.getType === 'signup') {
+    //   return ResponseEntity.ACCEPTED_WITH_DATA(rm.NO_USER, data);
+    // }
+    // return ResponseEntity.OK_WITH_DATA(rm.SIGNIN_SUCCESS, data);
   }
 
   //* 회원가입
@@ -124,9 +123,8 @@ export class AuthController {
     type: InternalServerError,
   })
   async signup(@Body() dto: AuthPostReqDTO, @UploadedFile() file?: Express.MulterS3.File) {
-    const image = file ? await this.awsS3Service.uploadFile(file) : this.config.defaultImage;
-    const data = await this.authService.signup(dto, image);
-
-    return ResponseEntity.CREATED_WITH_DATA(rm.SIGNUP_SUCCESS, data);
+    // const image = file ? await this.awsS3Service.uploadFile(file) : this.config.defaultImage;
+    // const data = await this.authService.signup(dto, image);
+    // return ResponseEntity.CREATED_WITH_DATA(rm.SIGNUP_SUCCESS, data);
   }
 }
