@@ -21,6 +21,7 @@ export class PostsController {
     return ResponseEntity.OK_WITH_DATA('', posts);
   }
 
+  //TODO 이미지 최대 5개 파일 추가
   //* 게시글 추가
   @Post()
   @ApiOperation({
@@ -28,7 +29,9 @@ export class PostsController {
     description: ``,
   })
   async createPost(@Body() dto: PostPostReqDTO): Promise<any> {
-    const post = await this.postsService.createPost(dto);
+    //TODO @Token으로 변경
+    const userId = 2;
+    const post = await this.postsService.createPost(userId, dto);
     return ResponseEntity.OK_WITH_DATA('', post);
   }
 
@@ -39,7 +42,9 @@ export class PostsController {
     description: ``,
   })
   async updatePost(@Param() param: PostPutParamDTO, @Body() dto: PostPostReqDTO): Promise<any> {
-    const post = await this.postsService.updatePost(param, dto);
+    //TODO @Token으로 변경
+    const userId = 2;
+    const post = await this.postsService.updatePost(userId, param, dto);
     return ResponseEntity.OK_WITH_DATA('', post);
   }
 
@@ -50,7 +55,9 @@ export class PostsController {
     description: ``,
   })
   async deletePost(@Param() param: PostPutParamDTO): Promise<any> {
-    const post = await this.postsService.deletePost(param);
+    //TODO @Token으로 변경
+    const userId = 2;
+    const post = await this.postsService.deletePost(userId, param);
     return ResponseEntity.OK_WITH_DATA('', post);
   }
 }

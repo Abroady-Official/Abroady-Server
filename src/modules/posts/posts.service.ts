@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { rm } from 'src/common/constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { PostPostReqDTO } from './dto/posts-post.req.dto';
 import { PostPutParamDTO } from './dto/posts-put.params.dto';
@@ -13,40 +14,78 @@ export class PostsService {
     return posts;
   }
 
-  async createPost(dto: PostPostReqDTO) {
+  //* 게시글 추가
+  async createPost(userId: number, dto: PostPostReqDTO) {
+    await this.checkCategoryPublic(dto.categoryId, dto.isAnonymous);
     await this.prisma.post.create({
       data: {
-        userId: dto.userId,
+        userId: userId,
         categoryId: dto.categoryId,
         title: dto.title,
         content: dto.content,
         isAnonymous: dto.isAnonymous,
-        image: dto.image,
       },
     });
   }
 
-  async updatePost(param: PostPutParamDTO, dto: PostPostReqDTO) {
+  //* 게시글 수정
+  async updatePost(userId: number, param: PostPutParamDTO, dto: PostPostReqDTO) {
+    await this.checkPostWriter(userId, param.postId);
+    await this.checkCategoryPublic(dto.categoryId, dto.isAnonymous);
     await this.prisma.post.update({
       where: {
         id: param.postId,
       },
       data: {
-        userId: dto.userId,
         categoryId: dto.categoryId,
         title: dto.title,
         content: dto.content,
         isAnonymous: dto.isAnonymous,
-        image: dto.image,
       },
     });
   }
 
-  async deletePost(param: PostPutParamDTO) {
+  //* 게시글 삭제
+  async deletePost(userId: number, param: PostPutParamDTO) {
+    await this.checkPostWriter(userId, param.postId);
     await this.prisma.post.deleteMany({
       where: {
         id: param.postId,
       },
     });
+  }
+
+  //^ 글 수정, 삭제 권한 확인
+  private async checkPostWriter(userId: number, postId: number) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (post === null) {
+      throw new NotFoundException(rm.NOT_FOUND_POST);
+    }
+
+    if (post.userId !== userId) {
+      throw new ForbiddenException(rm.NO_ACCESS_POST);
+    }
+  }
+
+  //^ 익명이 가능한 카테고리인지 확인
+  private async checkCategoryPublic(categoryId: number, isAnonymous: boolean) {
+    const category = await this.prisma.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (category === null) {
+      throw new NotFoundException(rm.NOT_FOUND_CATEGORY);
+    }
+
+    if (category.isPublic && isAnonymous === true) {
+      throw new ForbiddenException(rm.NO_ACCESS_ANONYMOUS);
+    }
   }
 }
