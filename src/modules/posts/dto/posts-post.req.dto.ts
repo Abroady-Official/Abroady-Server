@@ -3,13 +3,8 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class PostPostReqDTO {
   @ApiProperty()
-  @IsNumber()
   @IsNotEmpty()
-  userId: number;
-
-  @ApiProperty()
   @IsNumber()
-  @IsNotEmpty()
   categoryId: number;
 
   @ApiProperty()
@@ -25,8 +20,4 @@ export class PostPostReqDTO {
   @IsNotEmpty()
   @IsBoolean()
   isAnonymous: boolean;
-
-  @ApiProperty()
-  @IsString()
-  image: string;
 }
