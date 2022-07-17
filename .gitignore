@@ -3,9 +3,6 @@
 /node_modules
 .env.*
 
-# 워크플로우 설정 후 이그노어 해제
-workflows
-
 # Logs
 logs
 *.log

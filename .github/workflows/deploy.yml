@@ -1,0 +1,89 @@
+#? 해당 워크플로우는 develop에 Direct Push나 Merge시에
+#? CI 과정을 거치고 EC2 서버에 배포합니다.
+#? 과정에서 에러 발생 시 PR이 closed 됩니다.
+#? 수정 이후 다시 PR 요청바랍니다.
+
+name: Deploy
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    strategy:
+      matrix:
+        node-version: [16.15.1]
+        
+
+    steps:
+        #? 소스코드 체크아웃
+      - name: ✅ 체크아웃
+        uses: actions/checkout@v2
+
+        #? Node 버전
+      - name: ⚙️ ${{ matrix.node-version }} 버전의 노드로 세팅합니다.
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+        #? 환경 변수 설정
+      - name: ⚙️ 환경변수를 설정합니다.
+        working-directory: ./
+        run: |
+          touch .env.development
+          echo "${{ secrets.ABROADY }}" >> .env.development
+        
+        #? 빌드
+      - name: ✨ 빌드 과정을 시작합니다.
+        working-directory: ./
+        run: |
+          yarn
+          yarn build
+
+      # - name: 🚨 실패
+      #   uses: actions/github-script@0.2.0
+      #   with:
+      #     github-token: ${{github.token}}
+      #     script: |
+      #       const ref = "${{github.ref}}"
+      #       const pull_number = Number(ref.split("/")[2])
+      #       await github.pulls.createReview({
+      #         ...context.repo,
+      #         pull_number,
+      #         body:"👉 서버 코드를 다시 확인해주세요.",
+      #         event: "REQUEST_CHANGES"
+      #       })
+      #       await github.pulls.update({
+      #         ...context.repo,
+      #         pull_number,
+      #         state: "closed"
+      #       })
+      #   if: failure()
+
+        #? 빌드한 코드 압축
+      - name: 📦 빌드한 코드를 압축합니다.
+        #TODO 실제 릴리즈 이후 환경 변수 변경
+        run: zip -r abroady.zip ./dist ./scripts ./appspec.yml ./.env.development ./package.json ./prisma 
+
+        #? AWS 세팅
+      - name: 🌎 AWS에 접속합니다.
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+        #? 압축한 빌드 코드 S3에 업로드
+      - name: 🦖 S3에 압축된 서버 코드를 업로드합니다.
+        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./abroady.zip s3://abroady-deploy/deploy/
+
+        #? CodeDeploy를 통해 배포
+      - name: 🚀 배포를 시작합니다.
+        run: aws deploy create-deployment
+          --application-name abroady-codedeploy
+          --deployment-config-name CodeDeployDefault.OneAtATime
+          --deployment-group-name GROUP
+          --s3-location bucket=abroady-deploy,bundleType=zip,key=deploy/abroady.zip
