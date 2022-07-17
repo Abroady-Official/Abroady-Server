@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Category {
-  id        Int      @id(map: "category_pk") @unique(map: "category_id_uindex") @default(autoincrement())
-  name      String   @db.VarChar(50)
-  isPublic  Boolean  @default(false)
-  createdAt DateTime @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  updatedAt DateTime @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  Post      Post[]
+  id          Int       @id(map: "category_pk") @unique(map: "category_id_uindex") @default(autoincrement())
+  name        String    @db.VarChar(50)
+  description String    @db.VarChar(100)
+  isPublic    Boolean
+  createdAt   DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt   DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  Post        Post[]
 }
 
 model LikePost {

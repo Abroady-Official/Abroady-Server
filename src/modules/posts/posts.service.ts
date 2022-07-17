@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { rm } from 'src/common/constants';
 import { PrismaService } from '../prisma/prisma.service';
+import { PostGetCategoryParamDTO } from './dto/posts-get-category.params.dto';
 import { PostPostReqDTO } from './dto/posts-post.req.dto';
 import { PostPutParamDTO } from './dto/posts-put.params.dto';
 
@@ -11,6 +12,17 @@ export class PostsService {
   //* 전체 게시글 조회
   async getPosts() {
     const posts = await this.prisma.post.findMany();
+    return posts;
+  }
+
+  //* 카테고리별 게시글 조회
+  async getPostsByCategoryId(param: PostGetCategoryParamDTO) {
+    const category = await this.findCategoryById(param.categoryId);
+    const posts = await this.prisma.post.findMany({
+      where: {
+        categoryId: category.id,
+      },
+    });
     return posts;
   }
 
@@ -55,6 +67,21 @@ export class PostsService {
     });
   }
 
+  //^ 존재하는 카테고리인지 확인
+  private async findCategoryById(categoryId: number) {
+    const category = await this.prisma.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (category === null) {
+      throw new NotFoundException(rm.NOT_FOUND_CATEGORY);
+    }
+
+    return category;
+  }
+
   //^ 글 수정, 삭제 권한 확인
   private async checkPostWriter(userId: number, postId: number) {
     const post = await this.prisma.post.findUnique({
@@ -74,15 +101,7 @@ export class PostsService {
 
   //^ 익명이 가능한 카테고리인지 확인
   private async checkCategoryPublic(categoryId: number, isAnonymous: boolean) {
-    const category = await this.prisma.category.findUnique({
-      where: {
-        id: categoryId,
-      },
-    });
-
-    if (category === null) {
-      throw new NotFoundException(rm.NOT_FOUND_CATEGORY);
-    }
+    const category = await this.findCategoryById(categoryId);
 
     if (category.isPublic && isAnonymous === true) {
       throw new ForbiddenException(rm.NO_ACCESS_ANONYMOUS);
