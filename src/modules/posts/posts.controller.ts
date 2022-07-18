@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ResponseEntity } from 'src/common/constants/responseEntity';
 import { PostGetCategoryParamDTO } from './dto/posts-get-category.params.dto';
+import { PostGetParamDTO } from './dto/posts-get.params.dto';
 import { PostPostReqDTO } from './dto/posts-post.req.dto';
 import { PostPutParamDTO } from './dto/posts-put.params.dto';
 import { PostsService } from './posts.service';
@@ -20,6 +21,18 @@ export class PostsController {
   async getPosts() {
     const posts = await this.postsService.getPosts();
     return ResponseEntity.OK_WITH_DATA('', posts);
+  }
+
+  //TODO 뷰 나오면 response dto 수정
+  //* 상세 게시글 조회
+  @Get('/:postId')
+  @ApiOperation({
+    summary: '상세 게시글 조회',
+    description: ``,
+  })
+  async getPostByPostId(@Param() param: PostGetParamDTO) {
+    const post = await this.postsService.getPostByPostId(param);
+    return ResponseEntity.OK_WITH_DATA('', post);
   }
 
   //TODO 이미지 추가 후 response dto 수정
