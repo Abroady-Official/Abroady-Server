@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { rm } from 'src/common/constants';
 import { ResponseEntity } from 'src/common/constants/responseEntity';
 import { PostGetCategoryParamDTO } from './dto/posts-get-category.params.dto';
 import { PostGetParamDTO } from './dto/posts-get.params.dto';
@@ -12,6 +13,7 @@ import { PostsService } from './posts.service';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  //^ 해당 api 필요한 뷰 없음 (확인용)
   //* 전체 게시글 조회
   @Get()
   @ApiOperation({
@@ -32,7 +34,7 @@ export class PostsController {
   })
   async getPostByPostId(@Param() param: PostGetParamDTO) {
     const post = await this.postsService.getPostByPostId(param);
-    return ResponseEntity.OK_WITH_DATA('', post);
+    return ResponseEntity.OK_WITH_DATA(rm.READ_POST_SUCCESS, post);
   }
 
   //TODO 이미지 추가 후 response dto 수정
@@ -44,7 +46,7 @@ export class PostsController {
   })
   async getPostsByCategoryId(@Param() param: PostGetCategoryParamDTO) {
     const posts = await this.postsService.getPostsByCategoryId(param);
-    return ResponseEntity.OK_WITH_DATA('', posts);
+    return ResponseEntity.OK_WITH_DATA(rm.READ_CATEGORY_POST_SUCCESS, posts);
   }
 
   //TODO 이미지 최대 5개 파일 추가
@@ -58,7 +60,7 @@ export class PostsController {
     //TODO @Token으로 변경
     const userId = 2;
     const post = await this.postsService.createPost(userId, dto);
-    return ResponseEntity.OK_WITH_DATA('', post);
+    return ResponseEntity.OK_WITH_DATA(rm.CREATE_POST_SUCCESS, post);
   }
 
   //* 게시글 수정
@@ -71,7 +73,7 @@ export class PostsController {
     //TODO @Token으로 변경
     const userId = 2;
     const post = await this.postsService.updatePost(userId, param, dto);
-    return ResponseEntity.OK_WITH_DATA('', post);
+    return ResponseEntity.OK_WITH_DATA(rm.UPDATE_POST_SUCCESS, post);
   }
 
   //* 게시글 삭제
@@ -84,6 +86,6 @@ export class PostsController {
     //TODO @Token으로 변경
     const userId = 2;
     const post = await this.postsService.deletePost(userId, param);
-    return ResponseEntity.OK_WITH_DATA('', post);
+    return ResponseEntity.OK_WITH_DATA(rm.DELETE_POST_SUCCESS, post);
   }
 }

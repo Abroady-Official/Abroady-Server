@@ -43,6 +43,11 @@ export default {
   NOT_FOUND_CATEGORY: '존재하지 않는 카테고리입니다.',
 
   //^ 게시글
+  CREATE_POST_SUCCESS: '게시글 생성 성공입니다.',
+  READ_POST_SUCCESS: '상세 게시글 조회 성공입니다.',
+  READ_CATEGORY_POST_SUCCESS: '카테고리별 게시글 조회',
+  UPDATE_POST_SUCCESS: '게시글 수정 성공입니다.',
+  DELETE_POST_SUCCESS: '게시글 삭제 성공입니다.',
   NOT_FOUND_POST: '존재하지 않는 게시글입니다.',
   NO_ACCESS_POST: '글을 수정, 삭제할 권한이 없습니다.',
   NO_ACCESS_ANONYMOUS: '실명 게시판입니다.',
