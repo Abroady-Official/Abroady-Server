@@ -10,10 +10,10 @@ export function swaggerSetup(app: INestApplication): void {
   });
 
   const options = new DocumentBuilder()
-    .setTitle('POME API Docs')
+    .setTitle('Abroady API Docs')
     .setDescription(
       `
-    POME 공식 API 문서입니다.
+    Abroady 공식 API 문서입니다.
     `,
     )
     .setVersion('0.0.1')
