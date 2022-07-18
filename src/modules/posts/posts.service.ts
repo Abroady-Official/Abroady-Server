@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { rm } from 'src/common/constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { PostGetCategoryParamDTO } from './dto/posts-get-category.params.dto';
+import { PostGetParamDTO } from './dto/posts-get.params.dto';
 import { PostPostReqDTO } from './dto/posts-post.req.dto';
 import { PostPutParamDTO } from './dto/posts-put.params.dto';
 
@@ -13,6 +14,12 @@ export class PostsService {
   async getPosts() {
     const posts = await this.prisma.post.findMany();
     return posts;
+  }
+
+  //* 상세 게시글 조회
+  async getPostByPostId(param: PostGetParamDTO) {
+    const post = await this.findPostById(param.postId);
+    return post;
   }
 
   //* 카테고리별 게시글 조회
@@ -67,6 +74,21 @@ export class PostsService {
     });
   }
 
+  //^ 존재하는 게시글인지 확인
+  private async findPostById(postId: number) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (post === null) {
+      throw new NotFoundException(rm.NOT_FOUND_POST);
+    }
+
+    return post;
+  }
+
   //^ 존재하는 카테고리인지 확인
   private async findCategoryById(categoryId: number) {
     const category = await this.prisma.category.findUnique({
@@ -84,15 +106,7 @@ export class PostsService {
 
   //^ 글 수정, 삭제 권한 확인
   private async checkPostWriter(userId: number, postId: number) {
-    const post = await this.prisma.post.findUnique({
-      where: {
-        id: postId,
-      },
-    });
-
-    if (post === null) {
-      throw new NotFoundException(rm.NOT_FOUND_POST);
-    }
+    const post = await this.findPostById(postId);
 
     if (post.userId !== userId) {
       throw new ForbiddenException(rm.NO_ACCESS_POST);
