@@ -81,16 +81,6 @@ export class AuthController {
   @ApiOperation({
     summary: '소셜 로그인',
   })
-  @ApiParam({
-    name: 'social',
-    required: true,
-    description: "'kakao', 'apple', 'google' 가능합니다.",
-  })
-  @ApiHeader({
-    name: 'token',
-    required: true,
-    description: '해당 소셜 토큰 값을 의미합니다.',
-  })
   @ApiOkResponse({
     description: '로그인 성공',
     type: AuthSigninSuccess,
@@ -115,7 +105,7 @@ export class AuthController {
     description: '서버 내부 오류',
     type: InternalServerError,
   })
-  async authUser(@Param('social') param: AuthParamDTO, @Headers('token') token: string) {
+  async authUser(@Param() param: AuthParamDTO, @Headers('token') token: string) {
     const data = await this.authService.signinSocial(param.social, token);
 
     if (data.getType === 'signup') {
@@ -130,7 +120,6 @@ export class AuthController {
     summary: '회원가입',
     description: `
     소셜 로그인에서 받은 social, uuid 정보를 받아 회원가입을 진행합니다. \n
-    아이디는 랜덤으로 자동 생성됩니다. \n
     이미 사용중인 아이디일 시 409 에러를 출력합니다. \n
     `,
   })

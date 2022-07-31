@@ -1,15 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
+import { IsArray, IsIn, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
 import { SocialPlatform } from 'src/modules/auth/common/auth.type';
 
 export class UserDTO {
   @ApiProperty()
   id: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({
+    description: `
+    유저가 가입한 소셜
+    'kakao', 'apple', 'google' 만 사용 가능합니다.
+    `,
+    required: true,
+  })
+  @IsString()
   @IsIn(['kakao', 'apple', 'google'])
+  @IsNotEmpty()
   social: SocialPlatform;
 
   @ApiProperty()
@@ -23,6 +30,14 @@ export class UserDTO {
   @MaxLength(10)
   @Transform((params) => params.value.replace(/ /g, ''))
   nickname: string;
+
+  @ApiProperty()
+  @IsString()
+  country: string;
+
+  @ApiProperty()
+  @IsArray()
+  language: string[];
 
   @ApiProperty()
   profileImage: string;

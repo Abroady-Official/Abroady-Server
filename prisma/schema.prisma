@@ -29,6 +29,8 @@ model User {
   deviceToken     String?           @db.VarChar(500)
   createdAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
   updatedAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  country         String?           @db.VarChar(100)
+  language        String[]          @db.VarChar(20)
   LikePost        LikePost[]
   LikePostComment LikePostComment[]
   Post            Post[]
