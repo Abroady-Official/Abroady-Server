@@ -5,11 +5,22 @@ import { ConfigurationModule } from 'src/config/config.module';
 import { AppController } from './app.controller';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
-  imports: [ConfigurationModule, PrismaModule, CommonModule, JwtModule, AuthModule, UsersModule],
+  imports: [
+    ConfigurationModule,
+    PrismaModule,
+    CommonModule,
+    JwtModule,
+    AuthModule,
+    UsersModule,
+    PostsModule,
+    CategoriesModule,
+  ],
   controllers: [AppController],
   providers: [],
 })

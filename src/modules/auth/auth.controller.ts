@@ -91,6 +91,10 @@ export class AuthController {
     required: true,
     description: '해당 소셜 토큰 값을 의미합니다.',
   })
+  @ApiOkResponse({
+    description: '로그인 성공',
+    type: AuthSigninSuccess,
+  })
   @ApiAcceptedResponse({
     description: '가입하지 않은 유저입니다.',
     type: AuthGetSuccess,

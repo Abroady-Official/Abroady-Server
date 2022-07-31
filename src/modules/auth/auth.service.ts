@@ -130,7 +130,7 @@ export class AuthService {
     );
   }
 
-  // //^ Access Token 발급
+  //^ Access Token 발급
   private getAccessToken(payload: JwtPayload) {
     return this.jwt.sign(payload, {
       secret: this.config.jwtConfig.jwtSecret,
@@ -138,7 +138,7 @@ export class AuthService {
     });
   }
 
-  // //^ 유저 Validation
+  //^ 유저 Validation
   async validateUser(payload: JwtPayload): Promise<JwtPayload> {
     const { id } = payload;
     const user = await this.prisma.user.findFirst({

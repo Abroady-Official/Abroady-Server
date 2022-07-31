@@ -34,7 +34,7 @@ jobs:
         working-directory: ./
         run: |
           touch .env.development
-          echo "${{ secrets.POME }}" >> .env.development
+          echo "${{ secrets.ABROADY }}" >> .env.development
         
         #? 빌드
       - name: ✨ 빌드 과정을 시작합니다.
@@ -43,30 +43,30 @@ jobs:
           yarn
           yarn build
 
-      - name: 🚨 실패
-        uses: actions/github-script@0.2.0
-        with:
-          github-token: ${{github.token}}
-          script: |
-            const ref = "${{github.ref}}"
-            const pull_number = Number(ref.split("/")[2])
-            await github.pulls.createReview({
-              ...context.repo,
-              pull_number,
-              body:"👉 서버 코드를 다시 확인해주세요.",
-              event: "REQUEST_CHANGES"
-            })
-            await github.pulls.update({
-              ...context.repo,
-              pull_number,
-              state: "closed"
-            })
-        if: failure()
+      # - name: 🚨 실패
+      #   uses: actions/github-script@0.2.0
+      #   with:
+      #     github-token: ${{github.token}}
+      #     script: |
+      #       const ref = "${{github.ref}}"
+      #       const pull_number = Number(ref.split("/")[2])
+      #       await github.pulls.createReview({
+      #         ...context.repo,
+      #         pull_number,
+      #         body:"👉 서버 코드를 다시 확인해주세요.",
+      #         event: "REQUEST_CHANGES"
+      #       })
+      #       await github.pulls.update({
+      #         ...context.repo,
+      #         pull_number,
+      #         state: "closed"
+      #       })
+      #   if: failure()
 
         #? 빌드한 코드 압축
       - name: 📦 빌드한 코드를 압축합니다.
         #TODO 실제 릴리즈 이후 환경 변수 변경
-        run: zip -r pome.zip ./dist ./scripts ./appspec.yml ./.env.development ./package.json ./prisma 
+        run: zip -r abroady.zip ./dist ./scripts ./appspec.yml ./.env.development ./package.json ./prisma 
 
         #? AWS 세팅
       - name: 🌎 AWS에 접속합니다.
@@ -78,12 +78,12 @@ jobs:
 
         #? 압축한 빌드 코드 S3에 업로드
       - name: 🦖 S3에 압축된 서버 코드를 업로드합니다.
-        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./pome.zip s3://pome-bucket/deploy/
+        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./abroady.zip s3://abroady-deploy/deploy/
 
         #? CodeDeploy를 통해 배포
       - name: 🚀 배포를 시작합니다.
         run: aws deploy create-deployment
-          --application-name pome-deploy
+          --application-name abroady-codedeploy
           --deployment-config-name CodeDeployDefault.OneAtATime
-          --deployment-group-name pome-deploy-group
-          --s3-location bucket=pome-bucket,bundleType=zip,key=deploy/pome.zip
+          --deployment-group-name GROUP
+          --s3-location bucket=abroady-deploy,bundleType=zip,key=deploy/abroady.zip
