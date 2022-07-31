@@ -17,6 +17,26 @@ model Category {
   Post        Post[]
 }
 
+model User {
+  id              Int               @id(map: "user_pk") @unique(map: "user_id_uindex") @default(autoincrement())
+  social          String            @db.VarChar(20)
+  email           String?           @db.VarChar(100)
+  uuid            String            @unique(map: "user_uuid_uindex") @db.VarChar(500)
+  nickname        String            @unique(map: "user_nickname_uindex") @db.VarChar(10)
+  profileImage    String?           @db.VarChar(500)
+  bio             String?           @db.VarChar(200)
+  refreshToken    String            @unique(map: "user_refreshtoken_uindex") @db.VarChar(500)
+  deviceToken     String?           @db.VarChar(500)
+  createdAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  country         String?           @db.VarChar(100)
+  language        String[]          @db.VarChar(20)
+  LikePost        LikePost[]
+  LikePostComment LikePostComment[]
+  Post            Post[]
+  PostComment     PostComment[]
+}
+
 model LikePost {
   id        Int       @id(map: "likepost_pk") @unique(map: "likepost_id_uindex") @default(autoincrement())
   postId    Int
@@ -76,22 +96,4 @@ model PostImage {
   createdAt DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
   updatedAt DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
   Post      Post      @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "postimage_post_id_fk")
-}
-
-model User {
-  id              Int               @id(map: "user_pk") @unique(map: "user_id_uindex") @default(autoincrement())
-  social          String            @db.VarChar(20)
-  email           String?           @db.VarChar(100)
-  uuid            Int
-  nickname        String?           @db.VarChar(10)
-  profileImage    String?           @db.VarChar(500)
-  bio             String?           @db.VarChar(200)
-  refreshToken    String            @db.VarChar(500)
-  deviceToken     String?           @db.VarChar(500)
-  createdAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  updatedAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  LikePost        LikePost[]
-  LikePostComment LikePostComment[]
-  Post            Post[]
-  PostComment     PostComment[]
 }
