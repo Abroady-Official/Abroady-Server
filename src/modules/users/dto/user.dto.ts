@@ -1,11 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { SocialPlatform } from 'src/modules/auth/common/auth.type';
 
 export class UserDTO {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  social: string;
+  social: SocialPlatform;
+
+  @ApiProperty()
+  uuid: string;
 
   @ApiProperty()
   nickname: string;

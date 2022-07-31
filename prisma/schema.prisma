@@ -8,39 +8,90 @@ datasource db {
 }
 
 model Category {
-  id        Int      @id(map: "category_pk") @unique(map: "category_id_uindex") @default(autoincrement())
-  name      String   @db.VarChar(50)
-  isPublic  Boolean  @default(false)
-  createdAt DateTime @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  updatedAt DateTime @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  Post      Post[]
+  id          Int       @id(map: "category_pk") @unique(map: "category_id_uindex") @default(autoincrement())
+  name        String    @db.VarChar(50)
+  description String    @db.VarChar(100)
+  isPublic    Boolean
+  createdAt   DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt   DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  Post        Post[]
 }
 
 model Post {
-  id          Int      @id(map: "post_pk") @unique(map: "post_id_uindex") @default(autoincrement())
-  userId      Int
-  categoryId  Int
-  title       String   @db.VarChar(100)
-  content     String?  @db.VarChar(300)
-  isAnonymous Boolean  @default(false)
-  image       String?  @db.VarChar(500)
-  createdAt   DateTime @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  updatedAt   DateTime @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  Category    Category @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_category_id_fk")
-  User        User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_user_id_fk")
+  id            Int           @id(map: "post_pk") @unique(map: "post_id_uindex") @default(autoincrement())
+  userId        Int
+  categoryId    Int
+  title         String        @db.VarChar(100)
+  content       String        @db.VarChar(300)
+  isAnonymous   Boolean
+  imagesCount   Int?          @default(0)
+  likesCount    Int?          @default(0)
+  commentsCount Int?          @default(0)
+  createdAt     DateTime?     @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt     DateTime?     @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  Category      Category      @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_category_id_fk")
+  User          User          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_user_id_fk")
+  LikePost      LikePost[]
+  PostComment   PostComment[]
+  PostImage     PostImage[]
 }
 
 model User {
-  id           Int       @id(map: "user_pk") @unique(map: "user_id_uindex") @default(autoincrement())
-  social       String    @db.VarChar(20)
-  email        String?   @db.VarChar(100)
-  uuid         Int
-  nickname     String?   @db.VarChar(10)
-  profileImage String?   @db.VarChar(500)
-  bio          String?   @db.VarChar(200)
-  refreshToken String    @db.VarChar(500)
-  deviceToken  String?   @db.VarChar(500)
-  createdAt    DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  updatedAt    DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
-  Post         Post[]
+  id              Int               @id(map: "user_pk") @unique(map: "user_id_uindex") @default(autoincrement())
+  social          String            @db.VarChar(20)
+  email           String?           @db.VarChar(100)
+  uuid            String            @unique(map: "user_uuid_uindex") @db.VarChar(500)
+  nickname        String            @unique(map: "user_nickname_uindex") @db.VarChar(10)
+  profileImage    String?           @db.VarChar(500)
+  bio             String?           @db.VarChar(200)
+  refreshToken    String            @unique(map: "user_refreshtoken_uindex") @db.VarChar(500)
+  deviceToken     String?           @db.VarChar(500)
+  createdAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  LikePost        LikePost[]
+  LikePostComment LikePostComment[]
+  Post            Post[]
+  PostComment     PostComment[]
+}
+
+model LikePost {
+  id        Int       @id(map: "likepost_pk") @unique(map: "likepost_id_uindex") @default(autoincrement())
+  postId    Int
+  userId    Int
+  createdAt DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  Post      Post      @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "likepost_post_id_fk")
+  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "likepost_user_id_fk")
+}
+
+model LikePostComment {
+  id            Int         @id(map: "likepostcomment_pk") @unique(map: "likepostcomment_id_uindex") @default(autoincrement())
+  postCommentId Int
+  userId        Int
+  createdAt     DateTime?   @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt     DateTime?   @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  PostComment   PostComment @relation(fields: [postCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "likepostcomment_postcomment_id_fk")
+  User          User        @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "likepostcomment_user_id_fk")
+}
+
+model PostComment {
+  id              Int               @id(map: "postcomment_pk") @unique(map: "postcomment_id_uindex") @default(autoincrement())
+  postId          Int
+  userId          Int
+  parentId        Int?              @default(0)
+  content         String            @db.VarChar(300)
+  createdAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt       DateTime?         @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  Post            Post              @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "postcomment_post_id_fk")
+  User            User              @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "postcomment_user_id_fk")
+  LikePostComment LikePostComment[]
+}
+
+model PostImage {
+  id        Int       @id(map: "postimage_pk") @unique(map: "postimage_id_uindex") @default(autoincrement())
+  postId    Int
+  imageUrl  String    @db.VarChar(500)
+  createdAt DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  updatedAt DateTime? @default(dbgenerated("timezone('Asia/Seoul'::text, now())")) @db.Timestamp(6)
+  Post      Post      @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "postimage_post_id_fk")
 }
