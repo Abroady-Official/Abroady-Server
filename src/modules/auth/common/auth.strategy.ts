@@ -23,8 +23,16 @@ class AppleAuthStrategy implements SocialAuthStrategy {
   }
 }
 
+class NaverAuthStrategy implements SocialAuthStrategy {
+  constructor(private readonly auth: auth) {}
+  execute(accessToken: string) {
+    return this.auth.naverAuth(accessToken);
+  }
+}
+
 export const authStrategy: AuthType = {
   kakao: new KakaoAuthStrategy(new auth()),
   apple: new AppleAuthStrategy(new auth()),
   google: new GoogleAuthStrategy(new auth()),
+  naver: new NaverAuthStrategy(new auth()),
 };

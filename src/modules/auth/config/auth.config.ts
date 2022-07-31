@@ -19,7 +19,7 @@ export class auth {
 
       if (!uuid) throw new UnauthorizedException(rm.UNAUTHORIZED_SOCIAL);
 
-      return uuid;
+      return uuid.toString();
     } catch (error) {
       console.error(error);
       throw new BadRequestException(rm.SIGNIN_FAIL);
@@ -33,7 +33,8 @@ export class auth {
       const uuid = user.sub as string;
 
       if (!uuid || !user) throw new UnauthorizedException(rm.UNAUTHORIZED_SOCIAL);
-      return uuid;
+
+      return uuid.toString();
     } catch (error) {
       console.error(error);
 
@@ -48,9 +49,30 @@ export class auth {
       const uuid = user.sub as string;
 
       if (!uuid || !user) throw new UnauthorizedException(rm.UNAUTHORIZED_SOCIAL);
-      return uuid;
+
+      return uuid.toString();
     } catch (error) {
       console.error(error);
+      return null;
+    }
+  }
+
+  //* 네이버 OAuth 통신
+  async naverAuth(naverAccessToken: string) {
+    try {
+      const user = await axios({
+        method: 'get',
+        url: 'https://openapi.naver.com/v1/nid/me',
+        headers: {
+          Authorization: `Bearer ${naverAccessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        },
+      });
+
+      const uuid = user.data.response.id;
+
+      return uuid.toString();
+    } catch (error) {
       return null;
     }
   }

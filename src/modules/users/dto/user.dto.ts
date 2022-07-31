@@ -10,12 +10,12 @@ export class UserDTO {
   @ApiProperty({
     description: `
     유저가 가입한 소셜
-    'kakao', 'apple', 'google' 만 사용 가능합니다.
+    'kakao', 'apple', 'google', 'naver' 사용 가능합니다.
     `,
     required: true,
   })
   @IsString()
-  @IsIn(['kakao', 'apple', 'google'])
+  @IsIn(['kakao', 'apple', 'google', 'naver'])
   @IsNotEmpty()
   social: SocialPlatform;
 
